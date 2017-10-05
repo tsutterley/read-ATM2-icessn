@@ -31,6 +31,16 @@ Data variables for the given input icessn file format listed below:
 		aircraft trajectory (starboard = positive, port = negative). (meters)
 	track: Track identifier (numbered 1...n, starboard to port, and 0 = nadir)
 
+OPTIONS:
+	SUBSETTER: subset dataset to specific indices
+	VARIABLES: reduce input to specific variables: seconds, latitude, longitude,
+		elevation, SNslope, WEslope, RMS, npt_used, npt_edit, distance, track
+
+NOTES:
+	elevation(phi,lambda) = QFIT_elevation(phi0,lambda0)
+		+ SNslope * (phi - phi0) * 6378137 * pi/180
+		+ WEslope * (lambda - lambda0) * cos(phi0) * 6378137 * pi/180
+
 PYTHON DEPENDENCIES:
 	numpy: Scientific Computing Tools For Python
 		http://www.numpy.org
@@ -40,6 +50,8 @@ PROGRAM DEPENDENCIES:
 	count_leap_seconds.py: determines the number of leap seconds for a GPS time
 
 UPDATE HISTORY:
+	Updated 10/2017: include distance bad values in regular expression pattern
+		added option VARIABLES to read specific input variables
 	Written 10/2017
 """
 import os
@@ -48,7 +60,7 @@ import numpy as np
 from count_leap_seconds import count_leap_seconds
 
 #-- PURPOSE: read the ATM Level-2 icessn data file
-def read_ATM2_icessn(input_file, SUBSETTER=None):
+def read_ATM2_icessn(input_file, SUBSETTER=None, VARIABLES=None):
 	#-- regular expression pattern for extracting parameters
 	regex_pattern = '(BLATM2|ILATM2)_(\d+)_(\d+)_smooth_nadir(.*?)(csv|seg|pt)$'
 	rx = re.compile(regex_pattern, re.VERBOSE)
@@ -61,14 +73,14 @@ def read_ATM2_icessn(input_file, SUBSETTER=None):
 	elif (len(YYMMDD) == 8):
 		year,month,day = np.array([YYMMDD[:4],YYMMDD[4:6],YYMMDD[6:]],dtype='i')
 	#-- input file column types for input variable
-	file_dtype = {}
-	file_dtype['names'] = ('seconds','latitude','longitude','elevation',
-		'SNslope','WEslope','RMS','npt_used','npt_edit','distance','track')
-	file_dtype['formats'] = ('f','f','f','f','f','f','f','u4','u4','f','u4')
+	dtype = {}
+	dtype['names'] = ['seconds','latitude','longitude','elevation',
+		'SNslope','WEslope','RMS','npt_used','npt_edit','distance','track']
+	dtype['formats'] = ['f','f','f','f','f','f','f','u4','u4','f','u4']
 	#-- convert RMS from centimeters to meters
-	file_dtype['scale'] = (1.0,1.0,1.0,1.0,1.0,1.0,1.0/100.0,1,1,1.0,1)
+	dtype['scale'] = [1.0,1.0,1.0,1.0,1.0,1.0,1.0/100.0,1,1,1.0,1]
 	#-- compile regular expression operator for reading lines (extracts numbers)
-	regex_pattern = '[-+]?(?:(?:\d*\.\d+)|(?:\d+\.?))(?:[Ee][+-]?\d+)?'
+	regex_pattern = '[-+]?(?:(?:\d*\.\d+)|(?:\d+\.?)|(?:\*+))(?:[Ee][+-]?\d+)?'
 	regex = re.compile(regex_pattern, re.VERBOSE)
 	#-- read the input file, split at lines and remove all commented lines
 	with open(os.path.expanduser(input_file),'r') as f:
@@ -76,18 +88,30 @@ def read_ATM2_icessn(input_file, SUBSETTER=None):
 	#-- subset the data to indices if specified
 	if SUBSETTER:
 		file_contents = [file_contents[i] for i in SUBSETTER]
+	#-- reduce the dataset to specific input variables if specified
+	#-- NOTE: input VARIABLES must have the same names as dtype['names']
+	if VARIABLES:
+		ind = [i for i,v in enumerate(dtype['names']) if (v in VARIABLES)]
+		dtype['names'] = VARIABLES
+		dtype['formats'] = [dtype['formats'][i] for i in ind]
+		dtype['scale'] = [dtype['scale'][i] for i in ind]
+	else:
+		ind = [i for i,v in enumerate(dtype['names'])]
 	#-- output python dictionary with variables
 	ATM_L2_input = {}
 	#-- create output variables with length equal to the number of file lines
-	for key,val in zip(file_dtype['names'],file_dtype['formats']):
+	for key,val in zip(dtype['names'],dtype['formats']):
 		ATM_L2_input[key] = np.zeros_like(file_contents, dtype=val)
 	#-- for each line within the file
 	for i,line_entries in enumerate(file_contents):
 		#-- find numerical instances within the line
 		line_contents = regex.findall(line_entries)
-		#-- for each variable: save to dinput as float (integers will truncate)
-		for j,k in enumerate(file_dtype['names']):
-			ATM_L2_input[k][i]=np.float(line_contents[j])*file_dtype['scale'][j]
+		#-- for each variable: save to dinput as output variable type
+		for j,n,f,s in zip(ind,dtype['names'],dtype['formats'],dtype['scale']):
+			if re.match('\*+',line_contents[j]):
+				ATM_L2_input[n][i] = np.nan
+			else:
+				ATM_L2_input[n][i] = s*np.array(line_contents[j],dtype=f)
 	#-- convert shot time (seconds of day) to J2000
 	hour = np.floor(ATM_L2_input['seconds']/3600.0)
 	minute = np.floor((ATM_L2_input['seconds'] % 3600)/60.0)

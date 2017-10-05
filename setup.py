@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 setup(
 	name='read-ATM2-icessn',
-	version='1.0.0.0',
+	version='1.0.0.1',
 	description='Reads Level-2 Airborne Topographic Mapper (ATM) Icessn Elevation, Slope, and Roughness data products',
 	url='https://github.com/tsutterley/read-ATM2-icessn',
 	author='Tyler Sutterley',
