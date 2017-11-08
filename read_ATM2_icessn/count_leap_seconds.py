@@ -27,10 +27,10 @@ def get_leaps():
 def count_leap_seconds(GPS_Time):
 	leaps = get_leaps()
 	#-- number of leap seconds prior to GPS_Time
-	n_leaps = np.zeros_like(GPS_Time, dtype=np.uint)
+	n_leaps = np.zeros_like(GPS_Time)
 	for i,leap in enumerate(leaps):
 		count = np.count_nonzero(GPS_Time >= leap)
 		if (count > 0):
 			indices, = np.nonzero(GPS_Time >= leap)
-			n_leaps[indices] += 1
+			n_leaps[indices] += 1.0
 	return n_leaps

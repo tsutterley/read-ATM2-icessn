@@ -68,10 +68,10 @@ def read_ATM2_icessn(input_file, SUBSETTER=None, VARIABLES=None):
 	MISSION,YYMMDD,HHMMSS,AUX,SFX=rx.findall(os.path.basename(input_file)).pop()
 	#-- early date strings omitted century and millenia (e.g. 93 for 1993)
 	if (len(YYMMDD) == 6):
-		ypre,month,day = np.array([YYMMDD[:2],YYMMDD[2:4],YYMMDD[4:]],dtype='i')
+		ypre,month,day = np.array([YYMMDD[:2],YYMMDD[2:4],YYMMDD[4:]],dtype='f')
 		year = (ypre + 1900.0) if (ypre >= 90) else (ypre + 2000.0)
 	elif (len(YYMMDD) == 8):
-		year,month,day = np.array([YYMMDD[:4],YYMMDD[4:6],YYMMDD[6:]],dtype='i')
+		year,month,day = np.array([YYMMDD[:4],YYMMDD[4:6],YYMMDD[6:]],dtype='f')
 	#-- input file column types for input variable
 	dtype = {}
 	dtype['names'] = ['seconds','latitude','longitude','elevation',
