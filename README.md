@@ -3,9 +3,9 @@ read-ATM2-icessn
 
 #### Reads Level-2 Airborne Topographic Mapper (ATM) Icessn data products
 
-- [IceBridge ATM L2 Icessn Elevation, Slope, and Roughness](http://nsidc.org/data/docs/daac/icebridge/ilatm2/index.html)  
-- [Pre-IceBridge ATM L2 Icessn Elevation, Slope, and Roughness](http://nsidc.org/data/docs/daac/icebridge/blatm2/index.html)  
-- [NSIDC IceBridge Software Tools](http://nsidc.org/data/icebridge/tools.html)
+- [IceBridge ATM L2 Icessn Elevation, Slope, and Roughness](https://nsidc.org/data/ilatm2/)  
+- [Pre-IceBridge ATM L2 Icessn Elevation, Slope, and Roughness](https://nsidc.org/data/blatm2/)  
+- [NSIDC IceBridge Software Tools](https://nsidc.org/data/icebridge/tools.html)
 
 #### Calling Sequence
 ```
