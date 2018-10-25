@@ -144,5 +144,5 @@ def calc_GPS_to_UTC(YEAR, MONTH, DAY, HOUR, MINUTE, SECOND):
 	GPS = 367.*YEAR - np.floor(7.*(YEAR + np.floor((MONTH+9.)/12.))/4.) - \
 		np.floor(3.*(np.floor((YEAR + (MONTH - 9.)/7.)/100.) + 1.)/4.) + \
 		np.floor(275.*MONTH/9.) + DAY - 723263.0
-	GPS_Time = GPS*86400.0 + HOUR*1440.0 + MINUTE/60.0 + SECOND
+	GPS_Time = GPS*86400.0 + HOUR*3600.0 + MINUTE*60.0 + SECOND
 	return count_leap_seconds(GPS_Time)
