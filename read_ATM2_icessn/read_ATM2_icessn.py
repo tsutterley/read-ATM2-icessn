@@ -123,7 +123,7 @@ def read_ATM2_icessn(input_file, SUBSETTER=None, VARIABLES=None):
 	else:
 		S = 0.0
 	#-- calculation of Julian day
-	JD = calc_julian_day(year,month,day,HOUR=hour,MINUTE=minute,SECOND=second+S)
+	JD = calc_julian_day(year,month,day,HOUR=hour,MINUTE=minute,SECOND=second-S)
 	#-- converting to J2000 seconds
 	ATM_L2_input['time'] = (JD - 2451545.0)*86400.0
 	#-- return the input data
