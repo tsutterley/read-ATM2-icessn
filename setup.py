@@ -5,7 +5,7 @@ setup(
 	description='Reads Level-2 Airborne Topographic Mapper (ATM) Icessn Elevation, Slope, and Roughness data products',
 	url='https://github.com/tsutterley/read-ATM2-icessn',
 	author='Tyler Sutterley',
-	author_email='tyler.c.sutterley@nasa.gov',
+	author_email='tsutterl@uw.edu',
 	license='MIT',
 	classifiers=[
 		'Development Status :: 3 - Alpha',
