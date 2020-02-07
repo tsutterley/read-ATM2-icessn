@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 u"""
 read_ATM2_icessn.py
-Written by Tyler Sutterley (10/2017)
+Written by Tyler Sutterley (02/2020)
 
 Reads Level-2 Airborne Topographic Mapper (ATM) Icessn Elevation, Slope, and
 	Roughness data products provided by the National Snow and Ice Data Center
@@ -50,6 +50,7 @@ PROGRAM DEPENDENCIES:
 	count_leap_seconds.py: determines the number of leap seconds for a GPS time
 
 UPDATE HISTORY:
+	Updated 02/2020: changed import of count_leap_seconds function
 	Updated 10/2017: include distance bad values in regular expression pattern
 		added option VARIABLES to read specific input variables
 	Written 10/2017
@@ -57,7 +58,7 @@ UPDATE HISTORY:
 import os
 import re
 import numpy as np
-from count_leap_seconds import count_leap_seconds
+from read_ATM_icessn.count_leap_seconds import count_leap_seconds
 
 #-- PURPOSE: read the ATM Level-2 icessn data file
 def read_ATM2_icessn(input_file, SUBSETTER=None, VARIABLES=None):
@@ -143,6 +144,6 @@ def calc_julian_day(YEAR, MONTH, DAY, HOUR=0, MINUTE=0, SECOND=0):
 def calc_GPS_to_UTC(YEAR, MONTH, DAY, HOUR, MINUTE, SECOND):
 	GPS = 367.*YEAR - np.floor(7.*(YEAR + np.floor((MONTH+9.)/12.))/4.) - \
 		np.floor(3.*(np.floor((YEAR + (MONTH - 9.)/7.)/100.) + 1.)/4.) + \
-		np.floor(275.*MONTH/9.) + DAY - 723263.0
+		np.floor(275.*MONTH/9.) + DAY + 1721028.5 - 2444244.5
 	GPS_Time = GPS*86400.0 + HOUR*3600.0 + MINUTE*60.0 + SECOND
 	return count_leap_seconds(GPS_Time)

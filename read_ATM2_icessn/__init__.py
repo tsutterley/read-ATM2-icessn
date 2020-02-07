@@ -1,2 +1,2 @@
-from count_leap_seconds import count_leap_seconds
-from read_ATM2_icessn import read_ATM2_icessn
+from read_ATM2_icessn.count_leap_seconds import count_leap_seconds
+from read_ATM2_icessn.read_ATM2_icessn import read_ATM2_icessn
